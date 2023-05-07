@@ -1,28 +1,30 @@
+import uvicorn
 from datetime import datetime
 from fastapi import FastAPI
-import uvicorn
-#from opentelemetry import trace
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry import trace
 from repository.factory.telemetry import Telemetry
+from service.getCompany_Service import Service
 from model.company import Company
 
 class API:
 
     app = FastAPI(title="python-opentelemetry-demo")
-    FastAPIInstrumentor.instrument_app(app, tracer_provider=Telemetry().traceProvider)
 
-    @app.get("/")
+    @app.get("/", summary="Endpoint to Get")
     def getCompany() -> Company:
-        # current_span = trace.get_current_span() 
-        # current_span.set_attribute("root.lol", "I LOLED")
 
-        myCompany = Company(name="Company A", 
-                            description="This is Company A", 
-                            dateTime=str(datetime.now()), 
-                            traceId="")
+        tracer = Telemetry().getTracer()
+        CompanyID = 0
 
-        myCompany.traceId = Telemetry.newSpan("main::getCompany")
+        with tracer.start_as_current_span("API::getCompany") as parentSpan:
 
+            CompanyID = Service.getCompany_Service()
+
+            myCompany = Company(name="Company A", 
+                                description="This is Company A",
+                                companyId=CompanyID, 
+                                dateTime=str(datetime.now()), 
+                                traceId=trace.format_trace_id(parentSpan.get_span_context().trace_id))
         return myCompany
 
 
