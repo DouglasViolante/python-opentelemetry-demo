@@ -10,10 +10,9 @@ Brief project written with Python exclusively for educational purposes on the us
 
 ## Todo
 
-- Metrics Backend
 - Better Error and Exception Handling
 
-## Zipkin
+## Observability
 
 - [ZipKin](https://zipkin.io/)
 - [Prometheus](https://prometheus.io/)

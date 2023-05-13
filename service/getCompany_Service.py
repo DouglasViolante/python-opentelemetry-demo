@@ -1,28 +1,25 @@
 from random import randint
-from opentelemetry import trace
-from repository.factory.telemetry import Telemetry
-
+from internal.config import Config
+from datetime import datetime
 
 class Service:
 
     @classmethod
     def getCompany_Service(self):
 
-        tracer = Telemetry().getTracer()
+        tracer = Config.tracer
 
-        myCompanyId = 0
+        myCompanyBudget = 0
 
         with tracer.start_as_current_span("Service::getCompany_Service") as childSpan:
-            
             try:
-                myCompanyId = randint(1, 1000)
+                myCompanyBudget = randint(1, 10000)
 
-                if myCompanyId > 500:
+                Config.counters["counter_company_budget"].add(amount=myCompanyBudget, attributes={"Month" : datetime.today().month})
 
-                    raise Exception("Ops, Its Bigger than 500!!!")
+                if myCompanyBudget < 100:
+                    raise Exception("Ops, We Broke!")
             except Exception as msg:
-
                 childSpan.record_exception(msg)
 
-
-        return myCompanyId
+        return myCompanyBudget

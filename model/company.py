@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
 class Company(BaseModel):
+    companyId:      int
     name:           str
     description:    str | None = None
-    companyId:      int
-    traceId:        str = ""
+    budget:         float
     dateTime:       str
